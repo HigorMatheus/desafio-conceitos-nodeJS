@@ -31,7 +31,7 @@ app.get("/repositories", (request, response) => {
 app.post("/repositories", (request, response) => {
   const {title, url, techs }= request.body
 
-  const repository ={ id: uuid(),title, url, techs, likes: 0};
+  const repository ={ id: uuid(),title, url, techs, likes:0};
 
   repositories.push(repository)
 
@@ -42,7 +42,7 @@ app.put("/repositories/:id", (request, response) => {
   const {id} = request.params
   const {title, url, techs }= request.body 
 
-  const {likes} = repositories.find(repository=> repository.id ===id)
+  const repository = repositories.find(repository=> repository.id ===id)
   const repositoryIndex = repositories.findIndex(repository=> repository.id ===id)
 
   const repositoryUpdate={
@@ -50,7 +50,7 @@ app.put("/repositories/:id", (request, response) => {
     title,
     url,
     techs,
-    likes
+    likes: repository.likes
   }
 
   repositories[repositoryIndex] = repositoryUpdate
@@ -69,25 +69,16 @@ app.delete("/repositories/:id", (request, response) => {
   return response.send(204)
 });
 
-app.put("/repositories/:id/like", (request, response) => {
+app.post("/repositories/:id/like", (request, response) => {
   const {id}= request.params
-
-  const { likes, title, url, techs } = repositories.find(repository=> repository.id ===id)
 
    const repositoryIndex = repositories.findIndex(repository=> repository.id ===id)
 
+   const likes = repositories[repositoryIndex].likes+=1
 
-   const repositoryUpdate={
-     id,
-     title,
-     url,
-     techs,
-     likes : likes + 1
-   }
+   repositories[repositoryIndex].likes = likes;
  
-   repositories[repositoryIndex] = repositoryUpdate
- 
-   return response.status(201).json(repositoryUpdate)
+   return response.json(repositories[repositoryIndex]);
 });
 
 module.exports = app;
